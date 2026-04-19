@@ -1,0 +1,113 @@
+name: Build WechatExporter (Clean - arm64)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  build-arm64:
+    runs-on: macos-latest   # Apple Silicon runner (arm64)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          echo "=== Installing dependencies via Homebrew ==="
+          brew update
+          brew install jsoncpp protobuf abseil libplist opencore-amr lame \
+                       libimobiledevice libimobiledevice-glue libusbmuxd \
+                       openssl@3 curl sqlite
+
+      - name: Collect Homebrew paths
+        run: |
+          echo "=== Collecting Homebrew library paths ==="
+
+          # 收集所有依赖的路径
+          HEADER_PATHS=""
+          LIBRARY_PATHS=""
+
+          for pkg in jsoncpp protobuf abseil libplist opencore-amr lame \
+                     libimobiledevice libimobiledevice-glue libusbmuxd openssl@3; do
+            PREFIX=$(brew --prefix $pkg 2>/dev/null)
+            if [ -n "$PREFIX" ]; then
+              echo "Found $pkg at: $PREFIX"
+              HEADER_PATHS="$HEADER_PATHS $PREFIX/include"
+              LIBRARY_PATHS="$LIBRARY_PATHS $PREFIX/lib"
+            else
+              echo "Warning: $pkg not found"
+            fi
+          done
+
+          # 添加系统路径
+          HEADER_PATHS="$HEADER_PATHS /usr/local/include"
+          LIBRARY_PATHS="$LIBRARY_PATHS /usr/local/lib"
+
+          # 保存到环境变量
+          echo "HEADER_PATHS=$HEADER_PATHS" >> $GITHUB_ENV
+          echo "LIBRARY_PATHS=$LIBRARY_PATHS" >> $GITHUB_ENV
+
+          echo ""
+          echo "=== Final paths ==="
+          echo "Headers: $HEADER_PATHS"
+          echo "Libraries: $LIBRARY_PATHS"
+
+      - name: Build arm64
+        run: |
+          echo "=== Building WechatExporter for arm64 ==="
+
+          xcodebuild clean build \
+            -project WechatExporter.xcodeproj \
+            -scheme WechatExporter \
+            -configuration Release \
+            -derivedDataPath ./build \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=YES \
+            "HEADER_SEARCH_PATHS=$HEADER_PATHS" \
+            "LIBRARY_SEARCH_PATHS=$LIBRARY_PATHS"
+
+      - name: Verify build
+        run: |
+          echo "=== Verifying build output ==="
+
+          APP_PATH="build/Build/Products/Release/WechatExporter.app"
+
+          if [ -d "$APP_PATH" ]; then
+            echo "✅ WechatExporter.app created successfully"
+            echo ""
+            echo "App structure:"
+            ls -lh "$APP_PATH/Contents/MacOS/"
+            echo ""
+            echo "Binary architecture:"
+            file "$APP_PATH/Contents/MacOS/WechatExporter"
+            echo ""
+            echo "Linked libraries:"
+            otool -L "$APP_PATH/Contents/MacOS/WechatExporter" | head -20
+          else
+            echo "❌ WechatExporter.app not found"
+            exit 1
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WechatExporter-arm64-macos
+          path: build/Build/Products/Release/WechatExporter.app
+          retention-days: 30
+
+      - name: Create release archive
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          cd build/Build/Products/Release
+          zip -r WechatExporter-arm64-macos.zip WechatExporter.app
+          mv WechatExporter-arm64-macos.zip ../../../../
+
+      - name: Upload to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: WechatExporter-arm64-macos.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
