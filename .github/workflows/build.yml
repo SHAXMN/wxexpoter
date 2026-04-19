@@ -35,6 +35,17 @@ jobs:
         # 安装所有依赖（包括 libimobiledevice-glue 和 openssl@3）
         brew install jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd openssl@3
 
+        # 强制重新链接所有包（修复 GitHub Actions 上的库文件问题）
+        echo "=== Force relinking all packages ==="
+        brew unlink jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd openssl@3 || true
+        brew link --force --overwrite jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd openssl@3
+
+        # 验证库文件存在
+        echo "=== Verifying library files after linking ==="
+        ls -la $(brew --prefix lame)/lib/ | grep libmp3lame || echo "WARNING: lame libraries still missing!"
+        ls -la $(brew --prefix libimobiledevice)/lib/ | grep libimobiledevice || echo "WARNING: libimobiledevice libraries still missing!"
+        ls -la $(brew --prefix libplist)/lib/ | grep libplist || echo "WARNING: libplist libraries still missing!"
+
         # 克隆并编译 silk 库
         cd /tmp
         git clone https://github.com/collects/silk.git
