@@ -1,0 +1,566 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "atlres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (Simplified, PRC) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "文件(&F)"
+    BEGIN
+        MENUITEM "自动检查新版本",                     ID_FILE_CHK_UPDATE, CHECKED
+        MENUITEM "导出后打开目录",                     ID_FILE_OPEN_FOLDER, CHECKED
+        MENUITEM "输出详细日志",                      ID_FILE_DBG_LOGS
+        MENUITEM SEPARATOR
+        MENUITEM "iTunes备份导出",                  ID_FILE_EXP_ITUNES
+        MENUITEM SEPARATOR
+        MENUITEM "退出(&X)",                      ID_APP_EXIT
+    END
+    POPUP "格式 (&T)"
+    BEGIN
+        MENUITEM "HTML",                        ID_FORMAT_HTML
+        MENUITEM "文本",                          ID_FORMAT_TEXT
+        MENUITEM "PDF",                         ID_FORMAT_PDF
+    END
+    POPUP "选项(&O)"
+    BEGIN
+        MENUITEM "按消息时间倒序导出",                   ID_OPT_DESC_ORDER
+        MENUITEM "下载表情文件",                      ID_OPT_DL_EMOJI, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "上滑加载更多聊天记录",                  ID_OPT_LM_ONSCROLL
+        MENUITEM "常规分页 （1000条消息/页）",            ID_OPT_NORMALPAGINATION
+        MENUITEM "按年份分页",                       ID_OPT_PAGINATION_YEAR
+        MENUITEM "按月份分页",                       ID_OPT_PAGINATION_MONTH
+        MENUITEM SEPARATOR
+        MENUITEM "显示消息过滤",                      ID_OPT_FILTER
+        MENUITEM SEPARATOR
+        MENUITEM "增量导出",                        ID_OPT_INCREMENTALEXP
+        MENUITEM "包含公众号",                       ID_OPT_SUBSCRIPTIONS
+    END
+    POPUP "帮助(&H)"
+    BEGIN
+        MENUITEM "主页",                          ID_HELP_HOMEPAGE
+        MENUITEM SEPARATOR
+        MENUITEM "&About WechatExporter",       ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 187, 102
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于"
+FONT 9, "Segoe UI", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,130,81,50,14
+    CTEXT           "WechatExporter Application v1.0\n\n(c) Copyright 2020",IDC_VERSION,25,57,78,32
+    ICON            IDR_MAINFRAME,IDC_STATIC,55,26,20,20
+    GROUPBOX        "",IDC_STATIC,7,7,115,88
+END
+
+IDD_WECHATEXPORTER_FORM DIALOGEX 0, 0, 393, 196
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
+EXSTYLE WS_EX_CLIENTEDGE
+FONT 9, "Segoe UI", 0, 0, 0x1
+BEGIN
+    LTEXT           "iTunes备份目录：",IDC_STATIC_BACKUP,7,7,379,8
+    CONTROL         "",IDC_BACKUP,"ComboBoxEx32",CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP,7,18,362,60
+    PUSHBUTTON      "...",IDC_CHOOSE_BKP,371,17,15,14
+    LTEXT           "聊天记录输出目录：",IDC_STATIC,7,33,361,8
+    EDITTEXT        IDC_OUTPUT,7,44,362,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "...",IDC_CHOOSE_OUTPUT,371,44,15,14
+    GROUPBOX        "微信账号和聊天记录选择",IDC_GRP_USR_CHAT,7,62,379,108,0,WS_EX_TRANSPARENT
+    COMBOBOX        IDC_USERS,14,74,252,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_VERSIONS,270,76,109,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    CONTROL         "",IDC_SESSIONS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,14,90,365,73
+    LTEXT           "100%",IDC_PROGRESS_TEXT,14,76,121,8,NOT WS_VISIBLE,WS_EX_TRANSPARENT
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",NOT WS_VISIBLE | WS_BORDER,270,74,109,12
+    CONTROL         "",IDC_SESS_PROGRESS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | NOT WS_VISIBLE | WS_BORDER | WS_TABSTOP,14,90,365,73
+    GROUPBOX        "日志(CTRL+A：选中所有日志/CTRL+C：拷贝选中日志)",IDC_GRP_LOGS,7,62,379,108,NOT WS_VISIBLE,WS_EX_TRANSPARENT
+    LISTBOX         IDC_LOGS,14,74,365,89,LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | NOT WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    CONTROL         "显示日志",IDC_SHOW_LOGS,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,7,175,50,14
+    PUSHBUTTON      "取消(&C)",IDC_CANCEL,336,175,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "导出iTunes备份",IDC_EXP_ITNS,72,175,80,14,NOT WS_VISIBLE
+    PUSHBUTTON      "导出(&E)",IDC_EXPORT,279,175,50,14
+    PUSHBUTTON      "关闭(&X)",IDC_CLOSE,336,175,50,14
+END
+
+IDD_BACKUP_DLG DIALOGEX 0, 0, 328, 73
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "导出微信数据"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "取消",IDCANCEL,271,43,50,14
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,7,43,239,14
+    LTEXT           "正从移动设备导出微信数据...",IDC_TITLE,7,7,314,27
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 95
+    END
+
+    IDD_WECHATEXPORTER_FORM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 386
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 189
+    END
+
+    IDD_BACKUP_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 321
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 66
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_WECHATEXPORTER_FORM AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_BACKUP_DLG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_IPHONE              ICON                    "res\\iPhone.ico"
+
+IDI_ITUNES              ICON                    "res\\iTunes.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "Wechat Exporter"
+    IDS_SEL_BACKUP_DIR      "请选择iTunes备份目录。"
+    IDS_SEL_OUTPUT_DIR      "请选择聊天记录输出目录。"
+    IDS_CANCEL_PROMPT       "确定要取消导出吗？"
+    IDS_STATIC_BACKUP       "iTunes备份目录：(例如:%s)"
+    IDS_SESSION_IDX         "编号"
+    IDS_SESSION_NAME        "名称"
+    IDS_SESSION_COUNT       "聊天记录数"
+    IDS_ALL_USERS           "所有微信账号"
+    IDS_SESSION_USER        "微信账号"
+    IDS_ITUNES_VERSION      "iTunes 已安装， 版本：%s"
+    IDS_ITUNES_NOT_INSTALLED "iTunes 未安装"
+    IDS_ENC_BKP_NOT_SUPPORTED "不支持加密的iTunes Backup。请使用不加密形式备份iPhone/iPad设备。"
+    IDS_FAILED_TO_LOAD_BKP  "解析iTunes Backup失败。"
+    IDS_INVALID_OUTPUT_DIR  "无效的输出目录，请重新选择。"
+    IDS_TOOLTIP_LOGS        "Ctrl+A/Ctrl+C 拷贝日志"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_EXIT             "退出应用。\n退出"
+END
+
+STRINGTABLE
+BEGIN
+    ATL_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_NEW_VERSION         "发现新版本：%s，是否去下载？"
+    IDS_SESSION_NUMBER      "编号"
+    IDS_SESSION_STATUS      "进度"
+    IDS_SESSION_DONE        "已导出"
+    IDS_SESSION_PROGRESS    "%u / %u"
+    IDS_SESSION_CANCELLED   "已取消"
+    IDS_SHOW_LOGS           "显示日志"
+    IDS_HIDE_LOGS           "隐藏日志"
+    IDS_VERSIONS            "iTunes版本：%s, iOS版本：%s, 微信版本：%s"
+    IDS_NO_PREV_EXP         "输出目录下不存在前一次导出的信息，“增量导出”将被忽略。"
+    IDS_PREV_EXP_FOUND      "输出目录下发现了%s的导出数据，本次导出将采用“增量导出”模式，并复用前一次的设置。"
+    IDS_DELETED_SESSION     "(已删除)"
+    IDS_EXPORTING_MSGS      "正在导出聊天记录 (%d%%)"
+    IDS_DOWNLOADING_EMOJI   "正在下载表情文件，剩余: %d"
+    IDS_EXP_ITNS            "导出仅保留微信数据文件的iTunes备份"
+    IDS_SESSION_LAST_MSG    "最新消息"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_INVLD_INCEXP_FOR_MULTI_USERS "由于设计错误，对于多个微信账号的增量备份复原可能产生错误，请更换新的目录导出。"
+END
+
+#endif    // Chinese (Simplified, PRC) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "Check Update Automatically",  ID_FILE_CHK_UPDATE, CHECKED
+        MENUITEM "Open Folder After Exporting", ID_FILE_OPEN_FOLDER, CHECKED
+        MENUITEM "Output Detailed Logs",        ID_FILE_DBG_LOGS
+        MENUITEM SEPARATOR
+        MENUITEM "Export iTunes Backup",        ID_FILE_EXP_ITUNES
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "Forma&t "
+    BEGIN
+        MENUITEM "HTML",                        ID_FORMAT_HTML
+        MENUITEM "Text",                        ID_FORMAT_TEXT
+        MENUITEM "PDF",                         ID_FORMAT_PDF
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "From Newer To Earlier",       ID_OPT_DESC_ORDER
+        MENUITEM "Download Emoji Files to Local Disk", ID_OPT_DL_EMOJI, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "Load Messages On Scrolling",  ID_OPT_LM_ONSCROLL
+        MENUITEM "Normal Pagination (Every 1000 Messages)", ID_OPT_NORMALPAGINATION
+        MENUITEM "Pagination Based on Year",    ID_OPT_PAGINATION_YEAR
+        MENUITEM "Pagination Based on Month",   ID_OPT_PAGINATION_MONTH
+        MENUITEM SEPARATOR
+        MENUITEM "Show Message Filter",         ID_OPT_FILTER
+        MENUITEM SEPARATOR
+        MENUITEM "Incremental Exporting",       ID_OPT_INCREMENTALEXP
+        MENUITEM "Including Subscriptions",     ID_OPT_SUBSCRIPTIONS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "Home Page",                   ID_HELP_HOMEPAGE
+        MENUITEM SEPARATOR
+        MENUITEM "&About WechatExporter",       ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_WECHATEXPORTER_FORM DIALOGEX 0, 0, 393, 196
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS
+EXSTYLE WS_EX_CLIENTEDGE
+FONT 9, "Segoe UI", 0, 0, 0x1
+BEGIN
+    LTEXT           "iTunes Backup Directory:",IDC_STATIC_BACKUP,7,7,379,8
+    CONTROL         "",IDC_BACKUP,"ComboBoxEx32",CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP,7,18,362,60
+    PUSHBUTTON      "...",IDC_CHOOSE_BKP,371,17,15,14
+    LTEXT           "Output Directory:",IDC_STATIC,7,33,361,8
+    EDITTEXT        IDC_OUTPUT,7,44,362,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "...",IDC_CHOOSE_OUTPUT,371,44,15,14
+    GROUPBOX        "Wechat Accounts and Chats",IDC_GRP_USR_CHAT,7,62,379,108,0,WS_EX_TRANSPARENT
+    COMBOBOX        IDC_USERS,14,74,252,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_VERSIONS,270,76,109,14,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
+    CONTROL         "",IDC_SESSIONS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,14,90,365,73
+    LTEXT           "100%",IDC_PROGRESS_TEXT,14,76,121,8,NOT WS_VISIBLE,WS_EX_TRANSPARENT
+    CONTROL         "",IDC_PROGRESS,"msctls_progress32",NOT WS_VISIBLE | WS_BORDER,270,74,109,12
+    CONTROL         "",IDC_SESS_PROGRESS,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | NOT WS_VISIBLE | WS_BORDER | WS_TABSTOP,14,90,365,73
+    GROUPBOX        "Logs(CTRL+A:Select All Logs/CTRL+C:Copy Logs)",IDC_GRP_LOGS,7,62,379,108,NOT WS_VISIBLE,WS_EX_TRANSPARENT
+    LISTBOX         IDC_LOGS,14,74,365,89,LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | NOT WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    CONTROL         "Show Logs",IDC_SHOW_LOGS,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,7,175,50,14
+    PUSHBUTTON      "&Cancel",IDC_CANCEL,336,175,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Export iTunes Backup",IDC_EXP_ITNS,72,175,80,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Export",IDC_EXPORT,279,175,50,14
+    PUSHBUTTON      "Close",IDC_CLOSE,336,175,50,14
+END
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 187, 102
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 9, "Segoe UI", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
+    CTEXT           "WechatExporter Application v1.0\n\n(c) Copyright 2020",IDC_VERSION,25,57,78,32
+    ICON            IDR_MAINFRAME,IDC_STATIC,55,26,20,20
+    GROUPBOX        "",IDC_STATIC,7,7,115,88
+END
+
+IDD_BACKUP_DLG DIALOGEX 0, 0, 328, 73
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Export WeChat Data"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,271,43,50,14
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,7,43,239,14
+    LTEXT           "Exporting WeChat data from device... ",IDC_TITLE,7,7,314,27
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_WECHATEXPORTER_FORM, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 386
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 189
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 95
+    END
+
+    IDD_BACKUP_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 321
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 66
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_WECHATEXPORTER_FORM AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_BACKUP_DLG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\idr_main.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,9,6,0
+ PRODUCTVERSION 1,9,6,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000904b0"
+        BEGIN
+            VALUE "FileDescription", "WechatExporter Module"
+            VALUE "FileVersion", "1.9.6.0"
+            VALUE "InternalName", "WechatExporter"
+            VALUE "LegalCopyright", "Copyright 2020"
+            VALUE "OriginalFilename", "WechatExporter.exe"
+            VALUE "ProductName", "WechatExporter Module"
+            VALUE "ProductVersion", "1.9.6.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x9, 1200
+    END
+END
+
+#endif    // English resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""atlres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "Wechat Exporter"
+    IDS_SEL_BACKUP_DIR      "Please choose an iTunes backup directory."
+    IDS_SEL_OUTPUT_DIR      "Please choose an output directory."
+    IDS_CANCEL_PROMPT       "Sure to cancel the exporting?"
+    IDS_STATIC_BACKUP       "iTunes Backup Directory:(%s)"
+    IDS_SESSION_IDX         "No."
+    IDS_SESSION_NAME        "Name"
+    IDS_SESSION_COUNT       "Number of Msgs"
+    IDS_ALL_USERS           "All Wechat Accounts"
+    IDS_SESSION_USER        "Wechat Account"
+    IDS_ITUNES_VERSION      "iTunes Installed, Version:%s"
+    IDS_ITUNES_NOT_INSTALLED "iTunes NOT Installed"
+    IDS_ENC_BKP_NOT_SUPPORTED "Encrypted iTunes Backup is not supported."
+    IDS_FAILED_TO_LOAD_BKP  "Failed to load iTunes backup data."
+    IDS_INVALID_OUTPUT_DIR  "The output directory is invalid."
+    IDS_TOOLTIP_LOGS        "Ctrl+A/Ctrl+C Copy Logs"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_NEW_VERSION         "Find a new version:%s, Download it now?"
+    IDS_SESSION_NUMBER      "NO."
+    IDS_SESSION_STATUS      "Status"
+    IDS_SESSION_DONE        "Done"
+    IDS_SESSION_PROGRESS    "%u / %u"
+    IDS_SESSION_CANCELLED   "Cancelled"
+    IDS_SHOW_LOGS           "Show Logs"
+    IDS_HIDE_LOGS           "Hide Logs"
+    IDS_VERSIONS            "iTunes Version: %s, iOS Version: %s, Wechat Version: %s"
+    IDS_NO_PREV_EXP         "There is no previous exporting in output directory and ""Incremental Exporting"" will be ignored."
+    IDS_PREV_EXP_FOUND      "The previous exporting at %s found, will reuse previous options."
+    IDS_DELETED_SESSION     "(Deleted)"
+    IDS_EXPORTING_MSGS      "Exporting Messages (%d%%)"
+    IDS_DOWNLOADING_EMOJI   "Downloading Emoji Files, Remaing: %d"
+    IDS_EXP_ITNS            "Export iTunes Backup Files of WeChat"
+    IDS_SESSION_LAST_MSG    "Last Message"
+END
+
+STRINGTABLE
+BEGIN
+    ATL_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_INVLD_INCEXP_FOR_MULTI_USERS 
+                            "Incremental Exporting will be invalid for multiple WeChat accounts as for wrong design. \r\nPlease choose another directory for exporting."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+

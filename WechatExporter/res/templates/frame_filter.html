@@ -1,0 +1,392 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta content="yes" name="apple-touch-fullscreen">
+		<style type=text/css>
+		body
+		{
+			background-color: #c4c4c4;
+			font-family: "-apple-system", "Helvetica Neue", "Roboto", "Segoe UI", sans-serif;
+  			font-size: 10.5pt;
+      		margin: 0px;
+		}
+		.main
+		{
+			max-width:720px;
+			margin: 0 auto;
+			height: 100%;
+			padding-top: 54px; /* header */
+			padding-bottom: 20px; /* footer */
+			background-color: #ebebeb;
+		}
+		.header
+		{
+			position: fixed;
+			top:0;
+			max-width:720px;
+			width: 100%;
+			height: 48px;
+			background-color: #f6f6f6;
+			z-index: 99999999;
+		}
+		.sname
+		{
+			padding-left: 12px;
+			vertical-align: middle;
+			height: 48px;
+			line-height: 48px;
+			font-weight: bold;
+		}
+		.msgfilter
+		{
+			float:right;
+			height: 48px;
+			line-height: 48px;
+			padding-right: 8px;
+		}
+		.filter-btn
+		{
+			vertical-align: middle;
+		}
+		.footer
+		{
+			position: fixed;
+			bottom: 0;
+			max-width:720px;
+			width: 100%;
+			height: 20px;
+			z-index: 99999999;
+		}
+		
+		.msgs
+		{
+			width: 100%;
+			height: 100%;
+		}
+	  	.chat-left, .media-left
+	  	{
+			clear:both;
+			overflow: auto;
+			margin:0 auto;
+			padding: 8px 8px;
+	  	}
+		.chat-left div.avatar-box,
+		.media-left div.avatar-box
+		{
+			float: left;
+		}
+		.chat-left div.avatar-box
+		{
+			padding-top: 14px;
+		}
+		.chat-left div.nt-box,
+		.media-left div.nt-box
+		{
+			margin: 0 50px 2px 50px;
+			padding: 0px;
+			color: #848484;
+			font-size: 80%;
+			text-align: left;
+		}
+		.chat-left div.content-box
+		{
+			position: relative;
+			background-color: white;
+			/*float: left;*/
+			margin: 0 50px 10px 50px;
+			padding: 10px 10px 10px 10px;
+			border-radius:8px;
+		}
+		.media-left div.content-box
+		{
+			/*float: left;*/
+			margin: 0 50px 10px 50px;
+			padding: 10px 10px 10px 10px;
+    	}
+	    div.content-box
+	    {
+	      width:fit-content;
+	      width:-webkit-fit-content;
+	      width:-moz-fit-content;
+	    }
+		.chat-left.channels .content-box, .chat-right.channels .content-box
+		{
+			width:240px;
+		}
+		.refermsg
+		{
+			font-size: 90%;
+		}
+		
+		.chat-right, .media-right
+		{
+			clear:both;
+			overflow: auto;
+			max-width: 670px;
+			margin: 0 auto;
+			background-color: #ebebeb;
+			padding: 8px 8px 8px 58px;
+		}
+		.chat-right div.avatar-box,
+		.media-right div.avatar-box
+		{
+			float: right;
+		}
+		.chat-right div.nt-box,
+		.media-right div.nt-box
+		{
+			margin: 0px 50px 2px 50px;
+			padding: 0px;
+			color: #848484;
+			font-size: 80%;
+			text-align: right;
+		}
+		.chat-right div.content-box
+		{
+      		position: relative;
+			background-color: #b2e281;
+			margin: 0px 50px 10px auto;
+			padding: 10px 10px 10px 10px;
+			border-radius: 8px;
+		}
+		.media-right div.content-box
+		{
+			float: right;
+			margin: 0px 0px 10px 50px;
+			padding: 10px 10px 10px 10px;
+		}
+		
+		.name-right
+		{
+			display: none;
+		}
+		img.avatar
+		{
+			width: 40px;
+			height: 40px;
+			border-radius: 4px;
+		}
+		
+		.triangle
+		{
+			height: 0px;
+			width: 0px;
+			border-width: 6px;
+			border-style: solid;
+			position: relative;
+		}
+		.chat-left .triangle
+		{
+			position: absolute;
+			border-color: transparent white transparent transparent;
+			left: -12px;
+			top: 12px;
+		}
+		.chat-right .triangle
+		{
+			position: absolute;
+			border-color: transparent transparent transparent #b2e281;
+			right: -12px;
+			top: 12px;
+		}
+		
+		.chat-notice
+		{
+			clear: both;
+			font-size: 80%;
+			text-align: center;
+			margin-top: 15px;
+			margin-bottom: 15px;
+			margin:0 auto;
+			padding: 0px 8px;
+    	}
+    	.chat-notice .content-box
+		{
+			width: 80%;
+			margin:0 auto;
+		}
+		.chat-notice.fmsgtag .content-box
+		{
+			background-color: #008080;
+			border-radius: 4px;
+			font-size: 100%;
+			padding: 5px 10px;
+			color: white;
+		}
+		audio
+		{
+			max-width: 220px;
+		}
+		video
+		{
+			max-width: 240px;
+			border-radius: 8px;
+		}
+		.image
+		{
+			width:90px;
+			/*transition: all 2s;*/
+			border-radius:8px;
+			max-width: 360px;
+			max-height: 240px;
+			min-width: 120px;
+			min-height: 24px;
+		}
+		img
+		{
+			image-orientation: from-image;
+		}
+		img[src=""]
+		{
+			display: none;
+		}
+		img.app-icon
+		{
+			width: 24px;
+			height: 24px;
+			vertical-align:middle;
+			border-radius: 2px;
+		}
+		img.channel-poster
+		{
+			object-fit: cover;
+			width: 240px;
+			height: 240px;
+		}
+		.image:hover, .channel-poster:hover
+		{
+			cursor: crosshair;
+		  	/* transform: scale(5); */
+		}
+		
+		img.card-avatar
+		{
+			width: 42px;
+			height: 42px;
+			vertical-align:middle;
+		}
+		div.card-name
+		{
+			display: flex;
+			align-items:center;
+		}
+		div.card-name span
+		{
+			margin-left: 8px;
+		}
+		span.channel-title
+		{
+			margin-left: 2px;
+		}
+		div.card-type
+		{
+			border-top: 1px dotted #dedede;
+			margin: 10px 2px 2px 2px;
+			padding: 4 12px 8px 0px;
+			line-height: 1.6;
+		}
+		.contact-card .card-avatar
+		{
+			border-radius: 4px;
+		}
+		.channel-card .card-avatar
+		{
+			border-radius: 21px;
+		}
+		span.channel-title
+		{
+			overflow: hidden;
+			text-overflow: ellipsis;
+			-o-text-overflow: ellipsis;
+			white-space: nowrap;
+			-webkit-line-clamp: 1;
+			-webkit-box-orient: vertical;
+			word-break: break-all;
+			width: 300px;
+			display:block;
+		}
+		.appinfo
+		{
+			/*padding-top: 12px;*/
+		}
+		.app-name
+		{
+			padding-left: 4px;
+			color: #999;
+			font-size: 80%;
+		}
+		
+		.dont-break-out
+		{
+			overflow-wrap: break-word;
+			word-wrap: break-word;
+			
+			-ms-word-break: break-all;
+			/*word-break: break-all;*/
+			word-break: break-word;
+			-ms-hyphens: auto;
+			-moz-hyphens: auto;
+			-webkit-hyphens: auto;
+			hyphens: auto;
+		}
+  
+		</style>
+		<title>%%DISPLAYNAME%% - 微信聊天记录</title>
+	</head>
+	<body uid="%%USRNAME%%" sid="%%SESSION_USRNAME%%">
+		<div class="main">
+			<div class="header">
+				<span class="sname">%%DISPLAYNAME%%</span>
+				<div class="msgfilter">
+					<img width="24" border="0" alt="显示所有消息" id="filter-none" class="filter-btn" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAjVBMVEUAAABNyzpRwzJRwzJT0zNRwzJRxDJRwzFSxDZRxDJRwjJRwzJRwzFRwzFRxDJQwzJQxDFRwDJVyTBRwzJQwzFRwzJRwzJRxDJRwzFRwzFQwzFSxTFRwzJSwzJRwzJRwzFSxDJQwjJPwzNRwzJSwzJRwjFRwzJW0TVVzTRSxzNY1DZUyzRTyTNa2Dde4jquq4L8AAAAJnRSTlMABPn8BuSnyw/fIe3Dsn5WTBkK9LmsmpBvYzszvKKHdmhdKNNRP0nRLroAAAEmSURBVCjPbdLZcoMwDAVQWQIDYSf7vrSVvKX//3kNtKEp0zujF52xrbENP1FRFCmYRj1bE4oA2mZz3u7UX1Jw07kXEZud1Yso2LJzFgmNc2+zUSK4is2PcaBwWJDJ0lFaZKPhIowAc74vR6gEQ7xJAvFaO8zjcbNSkK14RiPLXfcydWGQCYkkSeHjpPW6jr7lKMjMaBawy4w8YuJ6kLoHCjHUznuP6I2RzSDFQ9BdU2vpVNmwrpDDvj+ozfycMa0ckgK0HeQsq2GENBM3By0YksTapLBoigH2vFglauWQveG+UEro8970N9MIEhHzo9BtXx9keUek3uh+ePaHUlokWOuZy25o/WpTxogxfV4ggknS2azb67idtJ/rb7N/voUCNdlnsvILSCAaBAI8PN8AAAAASUVORK5CYII=" />
+					&nbsp;
+					<img width="24" border="0" alt="只显示照片" id="filter-image" class="filter-btn" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAkFBMVEX////8/v79//7///3J6f2+5v3j8/3H6f204f3M6v71/P6z4/7y+v3s+f3W7v275P2/5vu25P/3/P655v7L7Pz1+v7v+v245P624v6x4v6+6f275f/h8v235f3O7PzC6PzY8fz5/f7j9P7p9v3E6P295v/l8/7X8f6u4f3m9f3R7f285/3e8f7b8f3T7v7T7/lYv97kAAABWElEQVQoz13R2W7DIBBA0YFhibdiTGxwvcfZm7T//3cdO6mi9MrCEkcDD4Dc/MssBQlmiCIRvRLSN8bZHGRVZdk8z9mjOR6TxjQuhyEbat/3XeJt54Ov2/s58aaT8FkNdYs4m+bgnGs26qTvsvEL5HvGGO+t3Ub2UKuTQuHdCnLiDK/BxGmgiVExbV1OsD/fGDvK5IS894GA6/CAxAjtus+YY+boqCPXl6NZIBx222AVMo7X824kmNJ1or4hEwMDoBECOqpM18uHiWGRIpKAvo3tE7JhBgYIfAG8tCf1Bwpe4ZR+H5mOCb5SzgCRPwP4udDEAiUiAcBjIWiRIAf3ff94a8jYCjLUst21Su3WT7UVMLHCwfbsvXhflDl8db7RWm9f9eLKqwUab8/XqYzjsijipZJjKkF2jp5onAqK9tclLS45dMFSdZ0s0W8tbAz0IhIiisRbWve/BvAiZfLgy6oAAAAASUVORK5CYII=" />
+					&nbsp;
+					<img width="24" border="0" alt="只显示视频" id="filter-video" class="filter-btn" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAZlBMVEW45f+65f/0+/214/7E6P215f+75f2z4v7L6/3T7v695v285v/y+v7G6f7B6P6+5v7J6v2x4v/1/P7P7f72+/32/Pv3/f6/5/7v+v7Z8P78/v6z5P+55fvW7/3e8v7i8/3q9v2r4P7/hAFWAAABUElEQVQoz1WQh47sIAxFjU0JkISWMOmZ/f+ffA6j2ac9oghdl4sBDjAuxtj9Ep05QIMAuGvf43+m+To4XOg3diEE/cE5HQq+DwBz46GEAKUUPAfvXdQ1gcZCXgSu+QDAt09rTyCzJN1iicOb4lU3OZCzVBTGxotYEWSowyaka0LM84R1keBNZyk+GVOQtchhiHEYljeR3bZB5gCyetunXRGR+jmR1mr7MiILc7D9Y6m5WeRWEhbJpcbZWTb3IFiI2R25yNY8/BGq1rllyOx/S5mTS53mEbgHeospGYZ+zmxKvfqPML/kdhXLFIu3MTFvcmg9hnRi38Bbg6ZX9/05KBLQxkR8akUsBLYr+fVBCPgO0QOgNaF5El98uhYCs9bREO1724aYJDdrwMO7rjw/Xo0Y47rdBOA1nEtGnPAhZ5xxseQVaAc7udeH8cERaSH+Ae9rFrU/VkySAAAAAElFTkSuQmCC" />
+				</div>
+			</div>
+			<div class="msgs" id="msgs-div">
+%%BODY%%
+			</div>
+			<div class="footer">
+	
+			</div>
+		</div>
+
+  </body>
+  %%LOADING_SCRIPTS%%
+
+  <script language="javascript">
+
+    function showElements(msgType)
+    {
+      var msgElements = document.querySelectorAll('div.msg');
+      if (null == msgElements || msgElements.length == 0)
+      {
+        return;
+      }
+
+      for (idx = 0; idx < msgElements.length; idx++)
+      {
+        msgElements[idx].style.display = ((msgType == null) || msgElements[idx].getAttribute("msgtype") == msgType) ? "block" : "none";
+      }
+    }
+
+    document.getElementById("filter-none").addEventListener("click", function() {
+      showElements(null);
+    });
+
+    document.getElementById("filter-image").addEventListener("click", function() {
+      showElements("image");
+    });
+
+    document.getElementById("filter-video").addEventListener("click", function() {
+      showElements("video");
+    });
+
+  </script>
+
+</html>
