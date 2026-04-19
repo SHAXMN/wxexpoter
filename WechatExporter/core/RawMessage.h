@@ -21,7 +21,7 @@
 #include <google/protobuf/io/tokenizer.h>
 #include <google/protobuf/compiler/parser.h>
 // #include <google/protobuf/compiler/importer.h>
-#include <google/protobuf/stubs/strutil.h>
+// #include <google/protobuf/stubs/strutil.h>  // Removed in protobuf 34.x
 #include <google/protobuf/text_format.h>
 
 #include "Utils.h"
