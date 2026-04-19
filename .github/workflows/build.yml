@@ -24,13 +24,21 @@ jobs:
       run: |
         brew install jsoncpp protobuf libplist
 
+        # 获取 jsoncpp 安装路径
+        JSONCPP_PREFIX=$(brew --prefix jsoncpp)
+        echo "JSONCPP_PREFIX=$JSONCPP_PREFIX"
+
+        # 创建符号链接到标准位置
+        sudo ln -sf $JSONCPP_PREFIX/include/json /usr/local/include/json || true
+
     - name: Build
       run: |
         xcodebuild clean build \
           -project WechatExporter.xcodeproj \
           -scheme WechatExporter \
           -configuration Release \
-          -derivedDataPath ./build
+          -derivedDataPath ./build \
+          HEADER_SEARCH_PATHS="$(brew --prefix jsoncpp)/include $(brew --prefix protobuf)/include $(brew --prefix libplist)/include /usr/local/include"
 
     - name: Package app
       run: |
