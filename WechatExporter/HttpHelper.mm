@@ -61,7 +61,7 @@ static inline int callGestalt(OSType selector)
     NSString *osVersion = [self macOSXVersionString];
     NSString *webKitVersion = [self userVisibleWebKitVersionString];
     
-    return [NSString stringWithFormat:@"Mozilla/5.0 (Macintosh; %@ Mac OS X %@) AppleWebKit/%@ (KHTML, like Gecko) ", @PROCESSOR, osVersion, webKitVersion];
+    return [NSString stringWithFormat:@"Mozilla/5.0 (Macintosh; %s Mac OS X %@) AppleWebKit/%@ (KHTML, like Gecko) ", PROCESSOR, osVersion, webKitVersion];
 }
 
 
