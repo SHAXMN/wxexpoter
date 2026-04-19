@@ -21,6 +21,33 @@ jobs:
                        libimobiledevice libimobiledevice-glue libusbmuxd \
                        openssl@3 curl sqlite
 
+      - name: Build SILK SDK
+        run: |
+          echo "=== Building SILK SDK ==="
+          cd /tmp
+          git clone https://github.com/collects/silk.git
+          cd silk
+
+          # 修复 Makefile 以兼容 clang
+          sed -i '' 's/-enable-threads//g' Makefile
+
+          # 编译 silk 库
+          make lib
+
+          # 安装到系统路径
+          sudo mkdir -p /usr/local/include/silk
+          sudo mkdir -p /usr/local/lib
+
+          # 安装头文件和库文件
+          sudo cp interface/*.h /usr/local/include/silk/
+          sudo cp src/*.h /usr/local/include/silk/
+          sudo cp libSKP_SILK_SDK.a /usr/local/lib/
+
+          # 验证安装
+          echo "=== SILK SDK installed ==="
+          ls -la /usr/local/include/silk/ | head -10
+          ls -la /usr/local/lib/libSKP_SILK_SDK.a
+
       - name: Collect Homebrew paths
         run: |
           echo "=== Collecting Homebrew library paths ==="
