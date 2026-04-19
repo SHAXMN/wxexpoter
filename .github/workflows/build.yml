@@ -32,8 +32,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        # 安装所有依赖（包括 protobuf 的依赖 abseil 和 libimobiledevice）
-        brew install jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice
+        # 安装所有依赖（包括 libimobiledevice-glue）
+        brew install jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd
 
         # 克隆并编译 silk 库
         cd /tmp
@@ -96,16 +96,31 @@ jobs:
         OPENCORE_AMR_PREFIX=$(brew --prefix opencore-amr)
         LAME_PREFIX=$(brew --prefix lame)
         LIBIMOBILEDEVICE_PREFIX=$(brew --prefix libimobiledevice)
+        LIBIMOBILEDEVICE_GLUE_PREFIX=$(brew --prefix libimobiledevice-glue)
+        LIBUSBMUXD_PREFIX=$(brew --prefix libusbmuxd)
 
-        # 创建项目期望的 lame 库目录结构
+        # 创建项目期望的库目录结构
         mkdir -p releases/windows-libs/x64/rel/bin
+
+        # 复制 lame 库
         cp $LAME_PREFIX/lib/libmp3lame.dylib releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib
 
+        # 创建项目期望的旧版本库文件（符号链接到实际的 Homebrew 库）
+        # 这些是项目文件中硬编码的旧版本名称
+        ln -sf $LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib
+        ln -sf $LIBPLIST_PREFIX/lib/libplist-2.0.dylib releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib
+        ln -sf $LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.dylib releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib
+        ln -sf $LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib
+
+        # 验证创建的符号链接
+        echo "=== Created library symlinks ==="
+        ls -lh releases/windows-libs/x64/rel/bin/
+
         # 构建头文件搜索路径
-        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include /usr/local/include"
+        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include $LIBIMOBILEDEVICE_GLUE_PREFIX/include /usr/local/include"
 
         # 构建库文件搜索路径
-        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib /usr/local/lib"
+        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib /usr/local/lib"
 
         echo "Header paths: $HEADER_PATHS"
         echo "Library paths: $LIBRARY_PATHS"
