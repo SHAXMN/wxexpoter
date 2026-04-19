@@ -191,14 +191,14 @@ jobs:
         echo "Library paths: $LIBRARY_PATHS"
         echo ""
 
-        # 编译 arm64 架构
+        # 编译通用二进制（支持 Intel 和 Apple Silicon）
         xcodebuild clean build \
           -project WechatExporter.xcodeproj \
           -scheme WechatExporter \
           -configuration Release \
           -derivedDataPath ./build \
-          ARCHS=arm64 \
-          ONLY_ACTIVE_ARCH=YES \
+          ARCHS="x86_64 arm64" \
+          ONLY_ACTIVE_ARCH=NO \
           "HEADER_SEARCH_PATHS=$HEADER_PATHS" \
           "LIBRARY_SEARCH_PATHS=$LIBRARY_PATHS" \
           "OTHER_LDFLAGS=\$(inherited) -L$OPENSSL_PREFIX/lib -L$PROTOBUF_PREFIX/lib -L$ABSEIL_PREFIX/lib -L$JSONCPP_PREFIX/lib"
