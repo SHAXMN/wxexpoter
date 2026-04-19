@@ -112,12 +112,30 @@ jobs:
         # 清理旧文件（如果存在）
         rm -f releases/windows-libs/x64/rel/bin/*.dylib
 
+        # 诊断：列出所有库文件
+        echo "=== Available library files ==="
+        echo "LAME:"
+        ls -la $LAME_PREFIX/lib/libmp3lame* || echo "No lame libraries found"
+        echo ""
+        echo "libimobiledevice:"
+        ls -la $LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice* || echo "No libimobiledevice libraries found"
+        echo ""
+        echo "libplist:"
+        ls -la $LIBPLIST_PREFIX/lib/libplist* || echo "No libplist libraries found"
+        echo ""
+
         # 复制实际的库文件（不是符号链接）
-        cp $LAME_PREFIX/lib/libmp3lame.dylib releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib
-        cp $LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib
-        cp $LIBPLIST_PREFIX/lib/libplist-2.0.dylib releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib
-        cp $LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.dylib releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib
-        cp $LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib
+        # 使用 -L 跟随符号链接，复制实际文件
+        cp -L $LAME_PREFIX/lib/libmp3lame.*.dylib releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib 2>/dev/null || \
+          cp -L $LAME_PREFIX/lib/libmp3lame.dylib releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib
+        cp -L $LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.*.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib 2>/dev/null || \
+          cp -L $LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib
+        cp -L $LIBPLIST_PREFIX/lib/libplist-2.0.*.dylib releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib 2>/dev/null || \
+          cp -L $LIBPLIST_PREFIX/lib/libplist-2.0.dylib releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib
+        cp -L $LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.*.dylib releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib 2>/dev/null || \
+          cp -L $LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.dylib releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib
+        cp -L $LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.*.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib 2>/dev/null || \
+          cp -L $LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib
 
         # 同时在 /usr/local/lib 创建符号链接（链接器会在这里查找）
         sudo mkdir -p /usr/local/lib
@@ -149,7 +167,7 @@ jobs:
         xcodebuild -showBuildSettings -project WechatExporter.xcodeproj -scheme WechatExporter -configuration Release | grep -E "HEADER_SEARCH_PATHS|LIBRARY_SEARCH_PATHS|ARCHS|MACOSX_DEPLOYMENT_TARGET"
 
         # 编译 arm64 架构（Intel Mac 可通过 Rosetta 2 运行）
-        # 使用 OTHER_LDFLAGS 确保 OpenSSL 路径被传递给链接器
+        # 使用 OTHER_LDFLAGS 确保 OpenSSL 和 protobuf 路径被传递给链接器
         xcodebuild clean build \
           -project WechatExporter.xcodeproj \
           -scheme WechatExporter \
@@ -159,7 +177,7 @@ jobs:
           ONLY_ACTIVE_ARCH=YES \
           HEADER_SEARCH_PATHS="$HEADER_PATHS" \
           LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS" \
-          OTHER_LDFLAGS="-L$OPENSSL_PREFIX/lib"
+          OTHER_LDFLAGS="-L$OPENSSL_PREFIX/lib -L$PROTOBUF_PREFIX/lib"
 
     - name: Verify linked libraries
       run: |
