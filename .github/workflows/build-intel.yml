@@ -37,8 +37,8 @@ jobs:
         uname -m
         arch
 
-        # 安装所有依赖
-        brew install jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd
+        # 安装所有依赖（包括 openssl@3）
+        brew install jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd openssl@3
 
         # 克隆并编译 silk 库
         cd /tmp
@@ -69,7 +69,13 @@ jobs:
     - name: Diagnose dependencies
       run: |
         echo "=== Homebrew library versions ==="
-        brew list --versions libplist libimobiledevice libimobiledevice-glue libusbmuxd jsoncpp protobuf abseil opencore-amr lame
+        brew list --versions libplist libimobiledevice libimobiledevice-glue libusbmuxd jsoncpp protobuf abseil opencore-amr lame openssl@3
+
+        echo ""
+        echo "=== OpenSSL 3 location ==="
+        OPENSSL_PREFIX=$(brew --prefix openssl@3)
+        echo "OPENSSL_PREFIX: $OPENSSL_PREFIX"
+        ls -la $OPENSSL_PREFIX/lib/libcrypto* $OPENSSL_PREFIX/lib/libssl* 2>/dev/null || echo "OpenSSL libraries not found!"
 
         echo ""
         echo "=== Homebrew prefix ==="
@@ -88,7 +94,7 @@ jobs:
 
     - name: Build
       run: |
-        # 获取所有依赖的路径（Intel Mac 使用 /usr/local）
+        # 获取所有依赖的路径（包括 OpenSSL）
         JSONCPP_PREFIX=$(brew --prefix jsoncpp)
         PROTOBUF_PREFIX=$(brew --prefix protobuf)
         ABSEIL_PREFIX=$(brew --prefix abseil)
@@ -98,6 +104,7 @@ jobs:
         LIBIMOBILEDEVICE_PREFIX=$(brew --prefix libimobiledevice)
         LIBIMOBILEDEVICE_GLUE_PREFIX=$(brew --prefix libimobiledevice-glue)
         LIBUSBMUXD_PREFIX=$(brew --prefix libusbmuxd)
+        OPENSSL_PREFIX=$(brew --prefix openssl@3)
 
         # 创建项目期望的库目录结构
         mkdir -p releases/windows-libs/x64/rel/bin
@@ -127,11 +134,11 @@ jobs:
         echo "=== Library architectures ==="
         file releases/windows-libs/x64/rel/bin/*.dylib
 
-        # 构建头文件搜索路径
-        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include $LIBIMOBILEDEVICE_GLUE_PREFIX/include /usr/local/include"
+        # 构建头文件搜索路径（包括 OpenSSL）
+        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include $LIBIMOBILEDEVICE_GLUE_PREFIX/include $OPENSSL_PREFIX/include /usr/local/include"
 
-        # 构建库文件搜索路径
-        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib /usr/local/lib"
+        # 构建库文件搜索路径（包括 OpenSSL）
+        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib $OPENSSL_PREFIX/lib /usr/local/lib"
 
         echo ""
         echo "Header paths: $HEADER_PATHS"
@@ -142,6 +149,7 @@ jobs:
         xcodebuild -showBuildSettings -project WechatExporter.xcodeproj -scheme WechatExporter -configuration Release | grep -E "HEADER_SEARCH_PATHS|LIBRARY_SEARCH_PATHS|ARCHS|MACOSX_DEPLOYMENT_TARGET"
 
         # 编译 arm64 架构（Intel Mac 可通过 Rosetta 2 运行）
+        # 使用 OTHER_LDFLAGS 确保 OpenSSL 路径被传递给链接器
         xcodebuild clean build \
           -project WechatExporter.xcodeproj \
           -scheme WechatExporter \
@@ -150,7 +158,8 @@ jobs:
           ARCHS=arm64 \
           ONLY_ACTIVE_ARCH=YES \
           HEADER_SEARCH_PATHS="$HEADER_PATHS" \
-          LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS"
+          LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS" \
+          OTHER_LDFLAGS="-L$OPENSSL_PREFIX/lib"
 
     - name: Verify linked libraries
       run: |
