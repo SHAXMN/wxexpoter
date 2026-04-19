@@ -1,4 +1,4 @@
-name: Build WechatExporter (Universal Binary)
+name: Build WechatExporter (arm64 with Rosetta support)
 
 on:
   push:
@@ -131,14 +131,14 @@ jobs:
         echo "=== Xcode build settings ==="
         xcodebuild -showBuildSettings -project WechatExporter.xcodeproj -scheme WechatExporter -configuration Release | grep -E "HEADER_SEARCH_PATHS|LIBRARY_SEARCH_PATHS|ARCHS|MACOSX_DEPLOYMENT_TARGET"
 
-        # 编译 Universal Binary (arm64 + x86_64)
+        # 编译 arm64 架构（Intel Mac 可通过 Rosetta 2 运行）
         xcodebuild clean build \
           -project WechatExporter.xcodeproj \
           -scheme WechatExporter \
           -configuration Release \
           -derivedDataPath ./build \
-          ARCHS="arm64 x86_64" \
-          ONLY_ACTIVE_ARCH=NO \
+          ARCHS=arm64 \
+          ONLY_ACTIVE_ARCH=YES \
           HEADER_SEARCH_PATHS="$HEADER_PATHS" \
           LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS"
 
@@ -148,17 +148,18 @@ jobs:
         otool -L build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
 
         echo ""
-        echo "=== Binary architectures ==="
+        echo "=== Binary architecture ==="
+        file build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
         lipo -info build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
 
     - name: Package app
       run: |
         cd build/Build/Products/Release
-        zip -r WechatExporter-Universal.zip WechatExporter.app
+        zip -r WechatExporter-arm64.zip WechatExporter.app
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WechatExporter-Universal
-        path: build/Build/Products/Release/WechatExporter-Universal.zip
+        name: WechatExporter-arm64-Rosetta
+        path: build/Build/Products/Release/WechatExporter-arm64.zip
         retention-days: 30
