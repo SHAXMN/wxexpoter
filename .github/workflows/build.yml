@@ -56,6 +56,10 @@ jobs:
         OPENCORE_AMR_PREFIX=$(brew --prefix opencore-amr)
         LAME_PREFIX=$(brew --prefix lame)
 
+        # 创建项目期望的 lame 库目录结构
+        mkdir -p releases/windows-libs/x64/rel/bin
+        cp $LAME_PREFIX/lib/libmp3lame.dylib releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib
+
         # 构建头文件搜索路径
         HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include /usr/local/include"
 
