@@ -20,6 +20,10 @@ jobs:
       with:
         xcode-version: latest-stable
 
+    - name: Install dependencies
+      run: |
+        brew install jsoncpp protobuf libplist
+
     - name: Build
       run: |
         xcodebuild clean build \
