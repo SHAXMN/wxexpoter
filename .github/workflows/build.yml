@@ -39,11 +39,16 @@ jobs:
         # 创建目标目录并安装 silk 库
         sudo mkdir -p /usr/local/include/silk
         sudo mkdir -p /usr/local/lib
+
+        # 安装所有必需的头文件 (interface/ 和 src/)
         sudo cp interface/*.h /usr/local/include/silk/
+        sudo cp src/*.h /usr/local/include/silk/
         sudo cp libSKP_SILK_SDK.a /usr/local/lib/
 
         # 验证安装
-        ls -la /usr/local/include/silk/
+        echo "=== Installed silk headers ==="
+        ls -la /usr/local/include/silk/ | head -20
+        echo "=== Installed silk library ==="
         ls -la /usr/local/lib/libSKP_SILK_SDK.a
 
     - name: Build
