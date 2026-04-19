@@ -102,6 +102,9 @@ jobs:
         # 创建项目期望的库目录结构
         mkdir -p releases/windows-libs/x64/rel/bin
 
+        # 清理旧文件（如果存在）
+        rm -f releases/windows-libs/x64/rel/bin/*.dylib
+
         # 复制实际的库文件（不是符号链接）
         cp $LAME_PREFIX/lib/libmp3lame.dylib releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib
         cp $LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib
