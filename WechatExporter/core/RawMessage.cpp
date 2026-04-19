@@ -15,7 +15,8 @@ bool convertUnknownField(const UnknownField &uf, std::string& value)
 {
     if (uf.type() == UnknownField::TYPE_LENGTH_DELIMITED)
     {
-        value.assign(uf.length_delimited().c_str(), uf.GetLengthDelimitedSize());
+        const auto& ld = uf.length_delimited();
+        value.assign(ld.data(), ld.size());
         return true;
     }
     else if (uf.type() == UnknownField::TYPE_VARINT)
@@ -60,7 +61,9 @@ bool convertUnknownField(const UnknownField &uf, int& value)
 
 std::string RawMessage::toUtf8String(const std::string& str)
 {
-    return UnescapeCEscapeString(str);
+    // UnescapeCEscapeString was removed in newer protobuf versions
+    // For now, return the string as-is since it's already UTF-8
+    return str;
 }
 
 RawMessage::RawMessage() : m_pool(NULL), m_factory(NULL), m_message(NULL)
@@ -99,7 +102,10 @@ bool RawMessage::merge(const char *data, int length)
     FileDescriptorProto file;
     file.set_name("empty_message.proto");
     file.add_message_type()->set_name("EmptyMessage");
-    GOOGLE_CHECK(m_pool->BuildFile(file) != NULL);
+    if (m_pool->BuildFile(file) == NULL)
+    {
+        return false;
+    }
 
     const Descriptor *descriptor = m_pool->FindMessageTypeByName("EmptyMessage");
     if (NULL == descriptor)

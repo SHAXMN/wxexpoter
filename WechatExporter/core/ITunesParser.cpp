@@ -657,7 +657,8 @@ unsigned int ITunesDb::parseModifiedTime(const std::vector<unsigned char>& data)
     }
     uint64_t val = 0;
     plist_t node = NULL;
-    plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node);
+    plist_format_t format = PLIST_FORMAT_NONE;
+    plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node, &format);
     if (NULL != node)
     {
         plist_t lastModified = plist_access_path(node, 3, "$objects", 1, "LastModified");
@@ -685,10 +686,11 @@ bool ITunesDb::parseFileInfo(const ITunesFile* file)
     }
     
     file->blobParsed = true;
-    
+
     uint64_t val = 0;
     plist_t node = NULL;
-    plist_from_memory(reinterpret_cast<const char *>(&file->blob[0]), static_cast<uint32_t>(file->blob.size()), &node);
+    plist_format_t format = PLIST_FORMAT_NONE;
+    plist_from_memory(reinterpret_cast<const char *>(&file->blob[0]), static_cast<uint32_t>(file->blob.size()), &node, &format);
     if (NULL != node)
     {
         plist_t lastModifiedNode = plist_access_path(node, 3, "$objects", 1, "LastModified");
@@ -1249,7 +1251,8 @@ bool ManifestParser::parse(const std::string& path, BackupItem& manifest) const
     if (readFile(fileName, data))
     {
         plist_t node = NULL;
-        plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node);
+        plist_format_t format = PLIST_FORMAT_NONE;
+        plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node, &format);
         if (NULL != node)
         {
             plist_t isEncryptedNode = plist_access_path(node, 1, "IsEncrypted");
@@ -1283,7 +1286,8 @@ bool ManifestParser::parseInfoPlist(const std::string& backupIdPath, BackupItem&
     std::string fileName = combinePath(backupIdPath, "Info.plist");
     std::string contents = readFile(fileName);
     plist_t node = NULL;
-    plist_from_memory(contents.c_str(), static_cast<uint32_t>(contents.size()), &node);
+    plist_format_t format = PLIST_FORMAT_NONE;
+    plist_from_memory(contents.c_str(), static_cast<uint32_t>(contents.size()), &node, &format);
     if (NULL == node)
     {
         return false;
@@ -1313,9 +1317,9 @@ bool ManifestParser::parseInfoPlist(const std::string& backupIdPath, BackupItem&
     subNode = plist_dict_get_item(node, ValueLastBackupDate);
     if (NULL != subNode)
     {
-        int32_t sec = 0, usec = 0;
-        plist_get_date_val(subNode, &sec, &usec);
-        manifest.setBackupTime(fromUnixTime(sec + 978278400, false));
+        int64_t unix_time = 0;
+        plist_get_unix_date_val(subNode, &unix_time);
+        manifest.setBackupTime(fromUnixTime(static_cast<int32_t>(unix_time), false));
     }
     
     manifest.setITunesVersion(getPlistStringValue(node, ValueITunesVersion));
@@ -1392,7 +1396,8 @@ bool ManifestParser::parseInfoPlist(const std::string& backupIdPath, BackupItem&
 bool ManifestParser::parseITunesMetadata(const std::string& metadata, BackupItem::AppInfo& appInfo)
 {
     plist_t node = NULL;
-    plist_from_memory(metadata.c_str(), static_cast<uint32_t>(metadata.size()), &node);
+    plist_format_t format = PLIST_FORMAT_NONE;
+    plist_from_memory(metadata.c_str(), static_cast<uint32_t>(metadata.size()), &node, &format);
     if (NULL == node)
     {
         return false;
