@@ -1,4 +1,4 @@
-name: Build WechatExporter (Intel x86_64)
+name: Build WechatExporter (Universal Binary)
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13  # macOS 13 使用 Intel x86_64 架构
+    runs-on: macos-latest  # 使用最新的 macOS runner (arm64)
 
     steps:
     - name: Checkout code
@@ -25,10 +25,10 @@ jobs:
       with:
         path: |
           ~/Library/Caches/Homebrew
-          /usr/local/Cellar
-        key: ${{ runner.os }}-brew-intel-${{ hashFiles('.github/workflows/build-intel.yml') }}
+          /opt/homebrew/Cellar
+        key: ${{ runner.os }}-brew-universal-${{ hashFiles('.github/workflows/build-intel.yml') }}
         restore-keys: |
-          ${{ runner.os }}-brew-intel-
+          ${{ runner.os }}-brew-universal-
 
     - name: Install dependencies
       run: |
@@ -131,14 +131,14 @@ jobs:
         echo "=== Xcode build settings ==="
         xcodebuild -showBuildSettings -project WechatExporter.xcodeproj -scheme WechatExporter -configuration Release | grep -E "HEADER_SEARCH_PATHS|LIBRARY_SEARCH_PATHS|ARCHS|MACOSX_DEPLOYMENT_TARGET"
 
-        # 编译 x86_64 架构
+        # 编译 Universal Binary (arm64 + x86_64)
         xcodebuild clean build \
           -project WechatExporter.xcodeproj \
           -scheme WechatExporter \
           -configuration Release \
           -derivedDataPath ./build \
-          ARCHS=x86_64 \
-          ONLY_ACTIVE_ARCH=YES \
+          ARCHS="arm64 x86_64" \
+          ONLY_ACTIVE_ARCH=NO \
           HEADER_SEARCH_PATHS="$HEADER_PATHS" \
           LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS"
 
@@ -147,14 +147,18 @@ jobs:
         echo "=== Linked libraries ==="
         otool -L build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
 
+        echo ""
+        echo "=== Binary architectures ==="
+        lipo -info build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
+
     - name: Package app
       run: |
         cd build/Build/Products/Release
-        zip -r WechatExporter-Intel.zip WechatExporter.app
+        zip -r WechatExporter-Universal.zip WechatExporter.app
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WechatExporter-Intel-x86_64
-        path: build/Build/Products/Release/WechatExporter-Intel.zip
+        name: WechatExporter-Universal
+        path: build/Build/Products/Release/WechatExporter-Universal.zip
         retention-days: 30
