@@ -1,0 +1,41 @@
+name: Build WechatExporter
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Build
+      run: |
+        xcodebuild clean build \
+          -project WechatExporter.xcodeproj \
+          -scheme WechatExporter \
+          -configuration Release \
+          -derivedDataPath ./build
+
+    - name: Package app
+      run: |
+        cd build/Build/Products/Release
+        zip -r WechatExporter.zip WechatExporter.app
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: WechatExporter-Enhanced
+        path: build/Build/Products/Release/WechatExporter.zip
+        retention-days: 30
