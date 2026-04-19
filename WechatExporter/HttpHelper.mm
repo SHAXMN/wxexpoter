@@ -12,28 +12,22 @@
 #define PROCESSOR "PPC"
 #elif defined(__i386__) || defined(__x86_64__)
 #define PROCESSOR "Intel"
+#elif defined(__arm64__) || defined(__aarch64__)
+#define PROCESSOR "Apple"
 #else
-#error Unknown architecture
+#define PROCESSOR "Unknown"
 #endif
 
 @implementation HttpHelper
 
-static inline int callGestalt(OSType selector)
-{
-    SInt32 value = 0;
-    Gestalt(selector, &value);
-    return value;
-}
-
 // Uses underscores instead of dots because if "4." ever appears in a user agent string, old DHTML libraries treat it as Netscape 4.
 + (NSString *)macOSXVersionString
 {
-    // Can't use -[NSProcessInfo operatingSystemVersionString] because it has too much stuff we don't want.
-    int major = callGestalt(gestaltSystemVersionMajor);
-    // ASSERT(major);
+    NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
+    int major = (int)version.majorVersion;
+    int minor = (int)version.minorVersion;
+    int bugFix = (int)version.patchVersion;
 
-    int minor = callGestalt(gestaltSystemVersionMinor);
-    int bugFix = callGestalt(gestaltSystemVersionBugFix);
     if (bugFix)
         return [NSString stringWithFormat:@"%d_%d_%d", major, minor, bugFix];
     if (minor)

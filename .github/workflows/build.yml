@@ -20,6 +20,16 @@ jobs:
       with:
         xcode-version: latest-stable
 
+    - name: Cache Homebrew packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Caches/Homebrew
+          /opt/homebrew/Cellar
+        key: ${{ runner.os }}-brew-${{ hashFiles('.github/workflows/build.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-brew-
+
     - name: Install dependencies
       run: |
         # 安装所有依赖（包括 protobuf 的依赖 abseil 和 libimobiledevice）
@@ -110,6 +120,8 @@ jobs:
           -scheme WechatExporter \
           -configuration Release \
           -derivedDataPath ./build \
+          ARCHS=arm64 \
+          ONLY_ACTIVE_ARCH=YES \
           HEADER_SEARCH_PATHS="$HEADER_PATHS" \
           LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS"
 
