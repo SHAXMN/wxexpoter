@@ -45,10 +45,6 @@
 		34C0E1D1277FDAA800CD4ADE /* libusbmuxd-2.0.6.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 34C0E1C8277FDAA800CD4ADE /* libusbmuxd-2.0.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		34C0E1D2277FDAA800CD4ADE /* libimobiledevice-glue-1.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C0E1C9277FDAA800CD4ADE /* libimobiledevice-glue-1.0.0.dylib */; };
 		34C0E1D3277FDAA800CD4ADE /* libimobiledevice-glue-1.0.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 34C0E1C9277FDAA800CD4ADE /* libimobiledevice-glue-1.0.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		34C0E1D4277FDAA800CD4ADE /* libcrypto.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C0E1CA277FDAA800CD4ADE /* libcrypto.1.1.dylib */; };
-		34C0E1D5277FDAA800CD4ADE /* libcrypto.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 34C0E1CA277FDAA800CD4ADE /* libcrypto.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		34C0E1D6277FDAA800CD4ADE /* libssl.1.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 34C0E1CB277FDAA800CD4ADE /* libssl.1.1.dylib */; };
-		34C0E1D7277FDAA800CD4ADE /* libssl.1.1.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 34C0E1CB277FDAA800CD4ADE /* libssl.1.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		34CC43BC275F001000ABC2BB /* IDeviceBackup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34CC43BB275F001000ABC2BB /* IDeviceBackup.cpp */; };
 		34E3E90A2531BD8E0093042D /* Utils_md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34E3E9092531BD8E0093042D /* Utils_md5.cpp */; };
 		34E3E90C2531BE200093042D /* Utils_protobuf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34E3E90B2531BE1F0093042D /* Utils_protobuf.cpp */; };
@@ -68,10 +64,8 @@
 				34C0E1D1277FDAA800CD4ADE /* libusbmuxd-2.0.6.dylib in Embed Libraries */,
 				34C0E1D3277FDAA800CD4ADE /* libimobiledevice-glue-1.0.0.dylib in Embed Libraries */,
 				34C0E1CD277FDAA800CD4ADE /* libimobiledevice-1.0.6.dylib in Embed Libraries */,
-				34C0E1D5277FDAA800CD4ADE /* libcrypto.1.1.dylib in Embed Libraries */,
 				34C0E1CF277FDAA800CD4ADE /* libplist-2.0.3.dylib in Embed Libraries */,
 				344AF3AC2784551900ED7586 /* libmp3lame.0.dylib in Embed Libraries */,
-				34C0E1D7277FDAA800CD4ADE /* libssl.1.1.dylib in Embed Libraries */,
 			);
 			name = "Embed Libraries";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -147,8 +141,6 @@
 		34C0E1C7277FDAA800CD4ADE /* libplist-2.0.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libplist-2.0.3.dylib"; path = "releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib"; sourceTree = "<group>"; };
 		34C0E1C8277FDAA800CD4ADE /* libusbmuxd-2.0.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libusbmuxd-2.0.6.dylib"; path = "releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib"; sourceTree = "<group>"; };
 		34C0E1C9277FDAA800CD4ADE /* libimobiledevice-glue-1.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libimobiledevice-glue-1.0.0.dylib"; path = "releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib"; sourceTree = "<group>"; };
-		34C0E1CA277FDAA800CD4ADE /* libcrypto.1.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.1.1.dylib; path = "releases/windows-libs/x64/rel/bin/libcrypto.1.1.dylib"; sourceTree = "<group>"; };
-		34C0E1CB277FDAA800CD4ADE /* libssl.1.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.1.1.dylib; path = "releases/windows-libs/x64/rel/bin/libssl.1.1.dylib"; sourceTree = "<group>"; };
 		34CA9B0F269FE6FB00C530C2 /* ExportContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExportContext.h; sourceTree = "<group>"; };
 		34CC43BA275EFFF400ABC2BB /* IDeviceBackup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IDeviceBackup.h; sourceTree = "<group>"; };
 		34CC43BB275F001000ABC2BB /* IDeviceBackup.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IDeviceBackup.cpp; sourceTree = "<group>"; };
@@ -180,9 +172,7 @@
 				34C0E1D0277FDAA800CD4ADE /* libusbmuxd-2.0.6.dylib in Frameworks */,
 				344AF3AB2784551900ED7586 /* libmp3lame.0.dylib in Frameworks */,
 				342EDB00252450EB006A295A /* libcurl.tbd in Frameworks */,
-				34C0E1D4277FDAA800CD4ADE /* libcrypto.1.1.dylib in Frameworks */,
 				343F613025234BFC00FFE085 /* libsqlite3.tbd in Frameworks */,
-				34C0E1D6277FDAA800CD4ADE /* libssl.1.1.dylib in Frameworks */,
 				34C0E1CC277FDAA800CD4ADE /* libimobiledevice-1.0.6.dylib in Frameworks */,
 				34C0E1CE277FDAA800CD4ADE /* libplist-2.0.3.dylib in Frameworks */,
 				342EDB0B252495BD006A295A /* libxml2.tbd in Frameworks */,
@@ -296,11 +286,9 @@
 			isa = PBXGroup;
 			children = (
 				344AF3AA2784551900ED7586 /* libmp3lame.0.dylib */,
-				34C0E1CA277FDAA800CD4ADE /* libcrypto.1.1.dylib */,
 				34C0E1C6277FDAA800CD4ADE /* libimobiledevice-1.0.6.dylib */,
 				34C0E1C9277FDAA800CD4ADE /* libimobiledevice-glue-1.0.0.dylib */,
 				34C0E1C7277FDAA800CD4ADE /* libplist-2.0.3.dylib */,
-				34C0E1CB277FDAA800CD4ADE /* libssl.1.1.dylib */,
 				34C0E1C8277FDAA800CD4ADE /* libusbmuxd-2.0.6.dylib */,
 				34ED31FE2552950100C42698 /* CoreMedia.framework */,
 				34ED31FB255294E500C42698 /* libz.tbd */,
@@ -601,6 +589,8 @@
 					"-ljsoncpp",
 					"-lSKP_SILK_SDK",
 					"-lopencore-amrnb",
+					"-lcrypto",
+					"-lssl",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.wakin.WechatExporter;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -642,6 +632,8 @@
 					"-ljsoncpp",
 					"-lSKP_SILK_SDK",
 					"-lopencore-amrnb",
+					"-lcrypto",
+					"-lssl",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.wakin.WechatExporter;
 				PRODUCT_NAME = "$(TARGET_NAME)";

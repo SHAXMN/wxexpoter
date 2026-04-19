@@ -32,8 +32,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        # 安装所有依赖（包括 libimobiledevice-glue）
-        brew install jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd
+        # 安装所有依赖（包括 libimobiledevice-glue 和 openssl@3）
+        brew install jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd openssl@3
 
         # 克隆并编译 silk 库
         cd /tmp
@@ -98,6 +98,7 @@ jobs:
         LIBIMOBILEDEVICE_PREFIX=$(brew --prefix libimobiledevice)
         LIBIMOBILEDEVICE_GLUE_PREFIX=$(brew --prefix libimobiledevice-glue)
         LIBUSBMUXD_PREFIX=$(brew --prefix libusbmuxd)
+        OPENSSL_PREFIX=$(brew --prefix openssl@3)
 
         # 创建项目期望的库目录结构
         mkdir -p releases/windows-libs/x64/rel/bin
@@ -124,10 +125,10 @@ jobs:
         ls -lh releases/windows-libs/x64/rel/bin/
 
         # 构建头文件搜索路径
-        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include $LIBIMOBILEDEVICE_GLUE_PREFIX/include /usr/local/include"
+        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include $LIBIMOBILEDEVICE_GLUE_PREFIX/include $OPENSSL_PREFIX/include /usr/local/include"
 
         # 构建库文件搜索路径
-        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib /usr/local/lib"
+        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib $OPENSSL_PREFIX/lib /usr/local/lib"
 
         echo "Header paths: $HEADER_PATHS"
         echo "Library paths: $LIBRARY_PATHS"
