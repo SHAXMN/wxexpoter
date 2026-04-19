@@ -537,9 +537,10 @@ bool MMSettingParser::parse(const std::string& usrNameHash)
     {
         return false;
     }
-    
+
     plist_t node = NULL;
-    plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node);
+    plist_format_t format = PLIST_FORMAT_NONE;
+    plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node, &format);
     if (NULL == node)
     {
         return false;
@@ -897,9 +898,10 @@ bool FriendsParser::parseFriendTags(ITunesDb *iTunesDb, const std::string& uidHa
     {
         return false;
     }
-    
+
     plist_t node = NULL;
-    plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node);
+    plist_format_t format = PLIST_FORMAT_NONE;
+    plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node, &format);
     if (NULL == node)
     {
         return false;
@@ -951,9 +953,9 @@ bool FriendsParser::parseFriendTags(ITunesDb *iTunesDb, const std::string& uidHa
 
             plist_get_uid_val(keyIdxNode, &keyIdx);
             plist_get_uid_val(objectIdxNode, &objectIdx);
-            
-            plist_t keyNode = plist_array_get_item(arrayNode, keyIdx);
-            plist_t objectNode = plist_array_get_item(arrayNode, objectIdx);
+
+            plist_t keyNode = plist_array_get_item(arrayNode, static_cast<uint32_t>(keyIdx));
+            plist_t objectNode = plist_array_get_item(arrayNode, static_cast<uint32_t>(objectIdx));
             
             pt = plist_get_node_type(keyNode);
             pt = plist_get_node_type(objectNode);
@@ -1021,9 +1023,10 @@ bool WechatInfoParser::parsePreferences(WechatInfo& wechatInfo)
     {
         return false;
     }
-    
+
     plist_t node = NULL;
-    plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node);
+    plist_format_t format = PLIST_FORMAT_NONE;
+    plist_from_memory(reinterpret_cast<const char *>(&data[0]), static_cast<uint32_t>(data.size()), &node, &format);
     if (NULL == node)
     {
         return false;
