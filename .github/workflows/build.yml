@@ -180,9 +180,10 @@ jobs:
         echo "=== Library architectures ==="
         file releases/windows-libs/x64/rel/bin/*.dylib
 
-        # 构建所有路径字符串
+        # 构建所有路径字符串（包含我们复制库文件的目录）
+        COPIED_LIBS_DIR="$(pwd)/releases/windows-libs/x64/rel/bin"
         HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include $LIBIMOBILEDEVICE_GLUE_PREFIX/include $OPENSSL_PREFIX/include /usr/local/include"
-        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib $OPENSSL_PREFIX/lib /usr/local/lib"
+        LIBRARY_PATHS="$COPIED_LIBS_DIR $JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib $OPENSSL_PREFIX/lib /usr/local/lib"
 
         echo ""
         echo "=== Build configuration ==="
