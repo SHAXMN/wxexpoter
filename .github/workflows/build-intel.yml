@@ -1,0 +1,160 @@
+name: Build WechatExporter (Intel x86_64)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-13  # macOS 13 使用 Intel x86_64 架构
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Cache Homebrew packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Caches/Homebrew
+          /usr/local/Cellar
+        key: ${{ runner.os }}-brew-intel-${{ hashFiles('.github/workflows/build-intel.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-brew-intel-
+
+    - name: Install dependencies
+      run: |
+        # 验证架构
+        echo "=== System Architecture ==="
+        uname -m
+        arch
+
+        # 安装所有依赖
+        brew install jsoncpp protobuf abseil libplist opencore-amr lame libimobiledevice libimobiledevice-glue libusbmuxd
+
+        # 克隆并编译 silk 库
+        cd /tmp
+        git clone https://github.com/collects/silk.git
+        cd silk
+
+        # 修复 Makefile 以兼容 clang
+        sed -i '' 's/-enable-threads//g' Makefile
+
+        # 编译 silk 库
+        make lib 2>&1 | grep -v "warning:" || true
+
+        # 创建目标目录并安装 silk 库
+        sudo mkdir -p /usr/local/include/silk
+        sudo mkdir -p /usr/local/lib
+
+        # 安装所有必需的头文件
+        sudo cp interface/*.h /usr/local/include/silk/
+        sudo cp src/*.h /usr/local/include/silk/
+        sudo cp libSKP_SILK_SDK.a /usr/local/lib/
+
+        # 验证安装
+        echo "=== Installed silk headers ==="
+        ls -la /usr/local/include/silk/ | head -20
+        echo "=== Installed silk library ==="
+        ls -la /usr/local/lib/libSKP_SILK_SDK.a
+
+    - name: Diagnose dependencies
+      run: |
+        echo "=== Homebrew library versions ==="
+        brew list --versions libplist libimobiledevice libimobiledevice-glue libusbmuxd jsoncpp protobuf abseil opencore-amr lame
+
+        echo ""
+        echo "=== Homebrew prefix ==="
+        brew --prefix
+
+        echo ""
+        echo "=== Xcode and SDK info ==="
+        xcodebuild -version
+        xcrun --show-sdk-path
+        xcrun --show-sdk-version
+
+        echo ""
+        echo "=== Architecture info ==="
+        uname -m
+        arch
+
+    - name: Build
+      run: |
+        # 获取所有依赖的路径（Intel Mac 使用 /usr/local）
+        JSONCPP_PREFIX=$(brew --prefix jsoncpp)
+        PROTOBUF_PREFIX=$(brew --prefix protobuf)
+        ABSEIL_PREFIX=$(brew --prefix abseil)
+        LIBPLIST_PREFIX=$(brew --prefix libplist)
+        OPENCORE_AMR_PREFIX=$(brew --prefix opencore-amr)
+        LAME_PREFIX=$(brew --prefix lame)
+        LIBIMOBILEDEVICE_PREFIX=$(brew --prefix libimobiledevice)
+        LIBIMOBILEDEVICE_GLUE_PREFIX=$(brew --prefix libimobiledevice-glue)
+        LIBUSBMUXD_PREFIX=$(brew --prefix libusbmuxd)
+
+        # 创建项目期望的库目录结构
+        mkdir -p releases/windows-libs/x64/rel/bin
+
+        # 复制实际的库文件（不是符号链接）
+        cp $LAME_PREFIX/lib/libmp3lame.dylib releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib
+        cp $LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib
+        cp $LIBPLIST_PREFIX/lib/libplist-2.0.dylib releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib
+        cp $LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.dylib releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib
+        cp $LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib
+
+        # 验证复制的库文件
+        echo "=== Created library files ==="
+        ls -lh releases/windows-libs/x64/rel/bin/
+
+        echo ""
+        echo "=== Library architectures ==="
+        file releases/windows-libs/x64/rel/bin/*.dylib
+
+        # 构建头文件搜索路径
+        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include $LIBIMOBILEDEVICE_GLUE_PREFIX/include /usr/local/include"
+
+        # 构建库文件搜索路径
+        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib /usr/local/lib"
+
+        echo ""
+        echo "Header paths: $HEADER_PATHS"
+        echo "Library paths: $LIBRARY_PATHS"
+
+        echo ""
+        echo "=== Xcode build settings ==="
+        xcodebuild -showBuildSettings -project WechatExporter.xcodeproj -scheme WechatExporter -configuration Release | grep -E "HEADER_SEARCH_PATHS|LIBRARY_SEARCH_PATHS|ARCHS|MACOSX_DEPLOYMENT_TARGET"
+
+        # 编译 x86_64 架构
+        xcodebuild clean build \
+          -project WechatExporter.xcodeproj \
+          -scheme WechatExporter \
+          -configuration Release \
+          -derivedDataPath ./build \
+          ARCHS=x86_64 \
+          ONLY_ACTIVE_ARCH=YES \
+          HEADER_SEARCH_PATHS="$HEADER_PATHS" \
+          LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS"
+
+    - name: Verify linked libraries
+      run: |
+        echo "=== Linked libraries ==="
+        otool -L build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
+
+    - name: Package app
+      run: |
+        cd build/Build/Products/Release
+        zip -r WechatExporter-Intel.zip WechatExporter.app
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WechatExporter-Intel-x86_64
+        path: build/Build/Products/Release/WechatExporter-Intel.zip
+        retention-days: 30
