@@ -23,7 +23,18 @@ jobs:
     - name: Install dependencies
       run: |
         # 安装所有依赖（包括 protobuf 的依赖 abseil）
-        brew install jsoncpp protobuf abseil libplist
+        brew install jsoncpp protobuf abseil libplist opencore-amr lame
+
+        # 克隆并编译 silk 库
+        cd /tmp
+        git clone https://github.com/collects/silk.git
+        cd silk
+        make lib
+
+        # 安装 silk 库到系统路径
+        sudo mkdir -p /usr/local/include/silk
+        sudo cp interface/*.h /usr/local/include/silk/
+        sudo cp libSKP_SILK_SDK.a /usr/local/lib/
 
     - name: Build
       run: |
@@ -32,12 +43,14 @@ jobs:
         PROTOBUF_PREFIX=$(brew --prefix protobuf)
         ABSEIL_PREFIX=$(brew --prefix abseil)
         LIBPLIST_PREFIX=$(brew --prefix libplist)
+        OPENCORE_AMR_PREFIX=$(brew --prefix opencore-amr)
+        LAME_PREFIX=$(brew --prefix lame)
 
         # 构建头文件搜索路径
-        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include /usr/local/include"
+        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include /usr/local/include"
 
         # 构建库文件搜索路径
-        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib /usr/local/lib"
+        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib /usr/local/lib"
 
         echo "Header paths: $HEADER_PATHS"
         echo "Library paths: $LIBRARY_PATHS"
