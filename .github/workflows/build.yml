@@ -112,6 +112,13 @@ jobs:
         cp $LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.dylib releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib
         cp $LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.dylib releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib
 
+        # 同时在 /usr/local/lib 创建符号链接（链接器会在这里查找）
+        sudo mkdir -p /usr/local/lib
+        sudo ln -sf $LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.dylib /usr/local/lib/liblibimobiledevice-1.0.6.dylib
+        sudo ln -sf $LIBPLIST_PREFIX/lib/libplist-2.0.dylib /usr/local/lib/libplist-2.0.3.dylib
+        sudo ln -sf $LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.dylib /usr/local/lib/libusbmuxd-2.0.6.dylib
+        sudo ln -sf $LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.dylib /usr/local/lib/libimobiledevice-glue-1.0.0.dylib
+
         # 验证复制的库文件
         echo "=== Created library files ==="
         ls -lh releases/windows-libs/x64/rel/bin/
