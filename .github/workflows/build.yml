@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
     - name: Checkout code
@@ -18,7 +18,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: latest-stable
+        xcode-version: '15.0'
 
     - name: Install dependencies
       run: |
@@ -51,6 +51,31 @@ jobs:
         echo "=== Installed silk library ==="
         ls -la /usr/local/lib/libSKP_SILK_SDK.a
 
+    - name: Diagnose dependencies
+      run: |
+        echo "=== Homebrew library versions ==="
+        brew list --versions libplist libimobiledevice jsoncpp protobuf abseil opencore-amr lame
+
+        echo ""
+        echo "=== Check dylib architectures ==="
+        if [ -d "releases/windows-libs/x64/rel/bin" ]; then
+          file releases/windows-libs/x64/rel/bin/*.dylib 2>/dev/null || echo "No dylib files found in releases/"
+          lipo -info releases/windows-libs/x64/rel/bin/*.dylib 2>/dev/null || echo "No dylib files to check"
+        else
+          echo "releases/windows-libs/x64/rel/bin directory does not exist yet"
+        fi
+
+        echo ""
+        echo "=== Xcode and SDK info ==="
+        xcodebuild -version
+        xcrun --show-sdk-path
+        xcrun --show-sdk-version
+
+        echo ""
+        echo "=== Architecture info ==="
+        uname -m
+        arch
+
     - name: Build
       run: |
         # 获取所有依赖的路径
@@ -75,6 +100,10 @@ jobs:
         echo "Header paths: $HEADER_PATHS"
         echo "Library paths: $LIBRARY_PATHS"
 
+        echo ""
+        echo "=== Xcode build settings ==="
+        xcodebuild -showBuildSettings -project WechatExporter.xcodeproj -scheme WechatExporter -configuration Release | grep -E "HEADER_SEARCH_PATHS|LIBRARY_SEARCH_PATHS|ARCHS|MACOSX_DEPLOYMENT_TARGET"
+
         # 编译
         xcodebuild clean build \
           -project WechatExporter.xcodeproj \
@@ -83,6 +112,11 @@ jobs:
           -derivedDataPath ./build \
           HEADER_SEARCH_PATHS="$HEADER_PATHS" \
           LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS"
+
+    - name: Verify linked libraries
+      run: |
+        echo "=== Linked libraries ==="
+        otool -L build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
 
     - name: Package app
       run: |
