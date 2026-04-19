@@ -29,6 +29,11 @@ jobs:
         cd /tmp
         git clone https://github.com/collects/silk.git
         cd silk
+
+        # 修复 Makefile 以兼容 clang (移除 -enable-threads 参数)
+        sed -i '' 's/-enable-threads//g' Makefile
+
+        # 编译 silk 库
         make lib
 
         # 安装 silk 库到系统路径
