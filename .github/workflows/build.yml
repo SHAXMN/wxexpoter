@@ -201,7 +201,7 @@ jobs:
           ONLY_ACTIVE_ARCH=YES \
           "HEADER_SEARCH_PATHS=$HEADER_PATHS" \
           "LIBRARY_SEARCH_PATHS=$LIBRARY_PATHS" \
-          "OTHER_LDFLAGS=-L$OPENSSL_PREFIX/lib -L$PROTOBUF_PREFIX/lib -L$ABSEIL_PREFIX/lib"
+          "OTHER_LDFLAGS=\$(inherited) -L$OPENSSL_PREFIX/lib -L$PROTOBUF_PREFIX/lib -L$ABSEIL_PREFIX/lib -L$JSONCPP_PREFIX/lib"
 
 
     - name: Verify linked libraries
