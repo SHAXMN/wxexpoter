@@ -96,12 +96,6 @@ void usleep(__int64 usec)
 }
 #endif
 
-enum plist_format_t
-{
-    PLIST_FORMAT_XML,
-    PLIST_FORMAT_BINARY
-};
-
 std::string formatDiskSize(uint64_t size)
 {
     char buf[80];
@@ -124,7 +118,7 @@ std::string formatDiskSize(uint64_t size)
     return std::string(buf);
 }
 
-int writePlistFile(plist_t plist, const std::string& filename, enum plist_format_t format)
+int writePlistFile(plist_t plist, const std::string& filename, plist_format_t format)
 {
     char *buffer = NULL;
     uint32_t length;
@@ -156,7 +150,8 @@ int readPlistFile(plist_t *plist, const std::string& filename)
         return 0;
     }
 
-    plist_from_memory((const char *)&buffer[0], (uint32_t)buffer.size(), plist);
+    plist_format_t format = PLIST_FORMAT_NONE;
+    plist_from_memory((const char *)&buffer[0], (uint32_t)buffer.size(), plist, &format);
 
     return 1;
 }
@@ -1135,7 +1130,7 @@ public:
             plist_dict_set_item(fdict, "DLFileType", plist_new_string(ftype));
             plist_dict_set_item(fdict, "DLFileSize", plist_new_uint(fileSize));
             plist_dict_set_item(fdict, "DLFileModificationDate",
-                        plist_new_date((uint32_t)((uint64_t)fi.getModifiedTime() - MAC_EPOCH), 0));
+                        plist_new_unix_date((int64_t)fi.getModifiedTime() - MAC_EPOCH));
 
             plist_dict_set_item(dirlist, fi.getFileName().c_str(), fdict);
         }
@@ -1992,7 +1987,7 @@ public:
         /* Installed Applications */
         plist_dict_set_item(ret, "Installed Applications", installed_apps);
 
-        plist_dict_set_item(ret, "Last Backup Date", plist_new_date(time(NULL) - MAC_EPOCH, 0));
+        plist_dict_set_item(ret, "Last Backup Date", plist_new_unix_date((int64_t)time(NULL) - MAC_EPOCH));
 
         value_node = plist_dict_get_item(root_node, "MobileEquipmentIdentifier");
         if (value_node)
