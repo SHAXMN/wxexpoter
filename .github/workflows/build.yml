@@ -108,97 +108,66 @@ jobs:
         LIBUSBMUXD_PREFIX=$(brew --prefix libusbmuxd)
         OPENSSL_PREFIX=$(brew --prefix openssl@3)
 
-        # 诊断：打印所有路径
-        echo "=== Homebrew prefixes ==="
-        echo "LAME: $LAME_PREFIX"
-        echo "libimobiledevice: $LIBIMOBILEDEVICE_PREFIX"
-        echo "libplist: $LIBPLIST_PREFIX"
-        echo "libusbmuxd: $LIBUSBMUXD_PREFIX"
-        echo "libimobiledevice-glue: $LIBIMOBILEDEVICE_GLUE_PREFIX"
-        echo ""
-
-        # 诊断：列出所有库文件
-        echo "=== Available library files ==="
-        echo "LAME:"
-        ls -la $LAME_PREFIX/lib/ 2>/dev/null | grep libmp3lame || echo "No lame libraries found"
-        echo ""
-        echo "libimobiledevice:"
-        ls -la $LIBIMOBILEDEVICE_PREFIX/lib/ 2>/dev/null | grep libimobiledevice || echo "No libimobiledevice libraries found"
-        echo ""
-        echo "libplist:"
-        ls -la $LIBPLIST_PREFIX/lib/ 2>/dev/null | grep libplist || echo "No libplist libraries found"
-        echo ""
-        echo "libusbmuxd:"
-        ls -la $LIBUSBMUXD_PREFIX/lib/ 2>/dev/null | grep libusbmuxd || echo "No libusbmuxd libraries found"
-        echo ""
-        echo "libimobiledevice-glue:"
-        ls -la $LIBIMOBILEDEVICE_GLUE_PREFIX/lib/ 2>/dev/null | grep libimobiledevice-glue || echo "No libimobiledevice-glue libraries found"
-        echo ""
-
         # 创建项目期望的库目录结构
         mkdir -p releases/windows-libs/x64/rel/bin
-
-        # 清理旧文件（如果存在）
         rm -f releases/windows-libs/x64/rel/bin/*.dylib
 
-        # 智能复制库文件：尝试多种可能的文件名
-        echo "=== Copying library files ==="
+        # 直接从 Homebrew Cellar 查找并复制库文件
+        echo "=== Finding and copying library files from Homebrew Cellar ==="
+        HOMEBREW_CELLAR="/opt/homebrew/Cellar"
 
-        # 复制 lame
-        if [ -f "$LAME_PREFIX/lib/libmp3lame.0.dylib" ]; then
-          cp -L "$LAME_PREFIX/lib/libmp3lame.0.dylib" releases/windows-libs/x64/rel/bin/
-        elif [ -f "$LAME_PREFIX/lib/libmp3lame.dylib" ]; then
-          cp -L "$LAME_PREFIX/lib/libmp3lame.dylib" releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib
+        # 查找并复制 lame
+        echo "Searching for libmp3lame..."
+        LAME_LIB=$(find $HOMEBREW_CELLAR/lame -name "libmp3lame.*.dylib" -type f 2>/dev/null | head -1)
+        if [ -n "$LAME_LIB" ]; then
+          echo "Found: $LAME_LIB"
+          cp -L "$LAME_LIB" releases/windows-libs/x64/rel/bin/libmp3lame.0.dylib
         else
-          echo "ERROR: libmp3lame not found!"
+          echo "ERROR: libmp3lame not found in Cellar!"
           exit 1
         fi
 
-        # 复制 libimobiledevice
-        if [ -f "$LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.6.dylib" ]; then
-          cp -L "$LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.6.dylib" releases/windows-libs/x64/rel/bin/
-        elif [ -f "$LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.dylib" ]; then
-          cp -L "$LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice-1.0.dylib" releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib
-        elif [ -f "$LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice.dylib" ]; then
-          cp -L "$LIBIMOBILEDEVICE_PREFIX/lib/libimobiledevice.dylib" releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib
+        # 查找并复制 libimobiledevice
+        echo "Searching for libimobiledevice..."
+        LIBIMOBILEDEVICE_LIB=$(find $HOMEBREW_CELLAR/libimobiledevice -name "libimobiledevice-1.0.*.dylib" -o -name "libimobiledevice.*.dylib" -type f 2>/dev/null | head -1)
+        if [ -n "$LIBIMOBILEDEVICE_LIB" ]; then
+          echo "Found: $LIBIMOBILEDEVICE_LIB"
+          cp -L "$LIBIMOBILEDEVICE_LIB" releases/windows-libs/x64/rel/bin/libimobiledevice-1.0.6.dylib
         else
-          echo "ERROR: libimobiledevice not found!"
+          echo "ERROR: libimobiledevice not found in Cellar!"
           exit 1
         fi
 
-        # 复制 libplist
-        if [ -f "$LIBPLIST_PREFIX/lib/libplist-2.0.3.dylib" ]; then
-          cp -L "$LIBPLIST_PREFIX/lib/libplist-2.0.3.dylib" releases/windows-libs/x64/rel/bin/
-        elif [ -f "$LIBPLIST_PREFIX/lib/libplist-2.0.dylib" ]; then
-          cp -L "$LIBPLIST_PREFIX/lib/libplist-2.0.dylib" releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib
-        elif [ -f "$LIBPLIST_PREFIX/lib/libplist.dylib" ]; then
-          cp -L "$LIBPLIST_PREFIX/lib/libplist.dylib" releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib
+        # 查找并复制 libplist
+        echo "Searching for libplist..."
+        LIBPLIST_LIB=$(find $HOMEBREW_CELLAR/libplist -name "libplist-2.0.*.dylib" -o -name "libplist.*.dylib" -type f 2>/dev/null | head -1)
+        if [ -n "$LIBPLIST_LIB" ]; then
+          echo "Found: $LIBPLIST_LIB"
+          cp -L "$LIBPLIST_LIB" releases/windows-libs/x64/rel/bin/libplist-2.0.3.dylib
         else
-          echo "ERROR: libplist not found!"
+          echo "ERROR: libplist not found in Cellar!"
           exit 1
         fi
 
-        # 复制 libusbmuxd
-        if [ -f "$LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.6.dylib" ]; then
-          cp -L "$LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.6.dylib" releases/windows-libs/x64/rel/bin/
-        elif [ -f "$LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.dylib" ]; then
-          cp -L "$LIBUSBMUXD_PREFIX/lib/libusbmuxd-2.0.dylib" releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib
-        elif [ -f "$LIBUSBMUXD_PREFIX/lib/libusbmuxd.dylib" ]; then
-          cp -L "$LIBUSBMUXD_PREFIX/lib/libusbmuxd.dylib" releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib
+        # 查找并复制 libusbmuxd
+        echo "Searching for libusbmuxd..."
+        LIBUSBMUXD_LIB=$(find $HOMEBREW_CELLAR/libusbmuxd -name "libusbmuxd-2.0.*.dylib" -o -name "libusbmuxd.*.dylib" -type f 2>/dev/null | head -1)
+        if [ -n "$LIBUSBMUXD_LIB" ]; then
+          echo "Found: $LIBUSBMUXD_LIB"
+          cp -L "$LIBUSBMUXD_LIB" releases/windows-libs/x64/rel/bin/libusbmuxd-2.0.6.dylib
         else
-          echo "ERROR: libusbmuxd not found!"
+          echo "ERROR: libusbmuxd not found in Cellar!"
           exit 1
         fi
 
-        # 复制 libimobiledevice-glue
-        if [ -f "$LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.0.dylib" ]; then
-          cp -L "$LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.0.dylib" releases/windows-libs/x64/rel/bin/
-        elif [ -f "$LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.dylib" ]; then
-          cp -L "$LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue-1.0.dylib" releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib
-        elif [ -f "$LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue.dylib" ]; then
-          cp -L "$LIBIMOBILEDEVICE_GLUE_PREFIX/lib/libimobiledevice-glue.dylib" releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib
+        # 查找并复制 libimobiledevice-glue
+        echo "Searching for libimobiledevice-glue..."
+        LIBIMOBILEDEVICE_GLUE_LIB=$(find $HOMEBREW_CELLAR/libimobiledevice-glue -name "libimobiledevice-glue-1.0.*.dylib" -o -name "libimobiledevice-glue.*.dylib" -type f 2>/dev/null | head -1)
+        if [ -n "$LIBIMOBILEDEVICE_GLUE_LIB" ]; then
+          echo "Found: $LIBIMOBILEDEVICE_GLUE_LIB"
+          cp -L "$LIBIMOBILEDEVICE_GLUE_LIB" releases/windows-libs/x64/rel/bin/libimobiledevice-glue-1.0.0.dylib
         else
-          echo "ERROR: libimobiledevice-glue not found!"
+          echo "ERROR: libimobiledevice-glue not found in Cellar!"
           exit 1
         fi
 
@@ -232,6 +201,7 @@ jobs:
           "HEADER_SEARCH_PATHS=$HEADER_PATHS" \
           "LIBRARY_SEARCH_PATHS=$LIBRARY_PATHS" \
           "OTHER_LDFLAGS=-L$OPENSSL_PREFIX/lib -L$PROTOBUF_PREFIX/lib -L$ABSEIL_PREFIX/lib"
+
 
     - name: Verify linked libraries
       run: |
