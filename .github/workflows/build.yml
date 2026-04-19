@@ -22,23 +22,34 @@ jobs:
 
     - name: Install dependencies
       run: |
-        brew install jsoncpp protobuf libplist
-
-        # 获取 jsoncpp 安装路径
-        JSONCPP_PREFIX=$(brew --prefix jsoncpp)
-        echo "JSONCPP_PREFIX=$JSONCPP_PREFIX"
-
-        # 创建符号链接到标准位置
-        sudo ln -sf $JSONCPP_PREFIX/include/json /usr/local/include/json || true
+        # 安装所有依赖（包括 protobuf 的依赖 abseil）
+        brew install jsoncpp protobuf abseil libplist
 
     - name: Build
       run: |
+        # 获取所有依赖的路径
+        JSONCPP_PREFIX=$(brew --prefix jsoncpp)
+        PROTOBUF_PREFIX=$(brew --prefix protobuf)
+        ABSEIL_PREFIX=$(brew --prefix abseil)
+        LIBPLIST_PREFIX=$(brew --prefix libplist)
+
+        # 构建头文件搜索路径
+        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include /usr/local/include"
+
+        # 构建库文件搜索路径
+        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib /usr/local/lib"
+
+        echo "Header paths: $HEADER_PATHS"
+        echo "Library paths: $LIBRARY_PATHS"
+
+        # 编译
         xcodebuild clean build \
           -project WechatExporter.xcodeproj \
           -scheme WechatExporter \
           -configuration Release \
           -derivedDataPath ./build \
-          HEADER_SEARCH_PATHS="$(brew --prefix jsoncpp)/include $(brew --prefix protobuf)/include $(brew --prefix libplist)/include /usr/local/include"
+          HEADER_SEARCH_PATHS="$HEADER_PATHS" \
+          LIBRARY_SEARCH_PATHS="$LIBRARY_PATHS"
 
     - name: Package app
       run: |
