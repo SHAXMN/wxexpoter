@@ -1,0 +1,85 @@
+name: Build WechatExporter (Intel x86_64)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-intel:
+    runs-on: macos-12  # 使用 macos-12 而不是 macos-13，更稳定
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        # 安装 Homebrew 依赖
+        brew install jsoncpp protobuf abseil libplist opencore-amr lame \
+                     libimobiledevice libimobiledevice-glue libusbmuxd openssl@3
+
+        # 编译 silk 库
+        cd /tmp
+        git clone https://github.com/collects/silk.git
+        cd silk
+        sed -i '' 's/-enable-threads//g' Makefile
+        make lib
+        sudo mkdir -p /usr/local/include/silk /usr/local/lib
+        sudo cp interface/*.h /usr/local/include/silk/
+        sudo cp src/*.h /usr/local/include/silk/
+        sudo cp libSKP_SILK_SDK.a /usr/local/lib/
+
+    - name: Build x86_64
+      run: |
+        # 获取依赖路径（Intel Mac 使用 /usr/local）
+        JSONCPP_PREFIX=$(brew --prefix jsoncpp)
+        PROTOBUF_PREFIX=$(brew --prefix protobuf)
+        ABSEIL_PREFIX=$(brew --prefix abseil)
+        LIBPLIST_PREFIX=$(brew --prefix libplist)
+        OPENCORE_AMR_PREFIX=$(brew --prefix opencore-amr)
+        LAME_PREFIX=$(brew --prefix lame)
+        LIBIMOBILEDEVICE_PREFIX=$(brew --prefix libimobiledevice)
+        LIBIMOBILEDEVICE_GLUE_PREFIX=$(brew --prefix libimobiledevice-glue)
+        LIBUSBMUXD_PREFIX=$(brew --prefix libusbmuxd)
+        OPENSSL_PREFIX=$(brew --prefix openssl@3)
+
+        # 构建路径
+        HEADER_PATHS="$JSONCPP_PREFIX/include $PROTOBUF_PREFIX/include $ABSEIL_PREFIX/include $LIBPLIST_PREFIX/include $OPENCORE_AMR_PREFIX/include $LAME_PREFIX/include $LIBIMOBILEDEVICE_PREFIX/include $LIBIMOBILEDEVICE_GLUE_PREFIX/include $OPENSSL_PREFIX/include /usr/local/include"
+        LIBRARY_PATHS="$JSONCPP_PREFIX/lib $PROTOBUF_PREFIX/lib $ABSEIL_PREFIX/lib $LIBPLIST_PREFIX/lib $OPENCORE_AMR_PREFIX/lib $LAME_PREFIX/lib $LIBIMOBILEDEVICE_PREFIX/lib $LIBIMOBILEDEVICE_GLUE_PREFIX/lib $LIBUSBMUXD_PREFIX/lib $OPENSSL_PREFIX/lib /usr/local/lib"
+
+        # 编译 x86_64
+        xcodebuild clean build \
+          -project WechatExporter.xcodeproj \
+          -scheme WechatExporter \
+          -configuration Release \
+          -derivedDataPath ./build \
+          ARCHS=x86_64 \
+          ONLY_ACTIVE_ARCH=YES \
+          "HEADER_SEARCH_PATHS=$HEADER_PATHS" \
+          "LIBRARY_SEARCH_PATHS=$LIBRARY_PATHS"
+
+    - name: Verify build
+      run: |
+        echo "=== Build output ==="
+        ls -lh build/Build/Products/Release/
+        echo ""
+        echo "=== Linked libraries ==="
+        otool -L build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
+        echo ""
+        echo "=== Architecture ==="
+        file build/Build/Products/Release/WechatExporter.app/Contents/MacOS/WechatExporter
+
+    - name: Package app
+      run: |
+        cd build/Build/Products/Release
+        zip -r WechatExporter-x86_64.zip WechatExporter.app
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WechatExporter-Intel-x86_64
+        path: build/Build/Products/Release/WechatExporter-x86_64.zip
+        retention-days: 30
